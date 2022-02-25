@@ -1,0 +1,186 @@
+{% extends "acao/_layouts/base.html" %}
+
+{% block scripts %}
+    <style>
+        .chartWithOverlay {
+            position: relative;
+            width: 700px;
+        }
+        .overlay {
+            width: 200px;
+            height: 200px;
+            position: absolute;
+            top: 60px;   /* chartArea top  */
+            left: 180px; /* chartArea left */
+        }
+        table#highlight>tbody>tr:hover {
+            background-color: #2E5C78;
+        }
+        
+        table#highlight>tbody>tr {
+            color: white;
+        }
+        table{
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
+        }
+        th{
+            background-color: rgb(180, 204, 152);
+        }
+        th, td{
+            padding: 5px 20px;
+            border-bottom: 1px solid rgb(161, 160, 160);
+        }
+        
+    </style>
+    
+    
+{% endblock %}
+
+{% block conteudo %}
+    <div style="display: flex; align-items: center; justify-content: center;">
+        <div class="card text-center w-50" style="margin: 10px;">
+            <h5 class="card-header">
+                Pesquiar ação na B3 para prever o preço
+            </h5>
+            <div class="card-body">
+                <p class="card-text">
+                    <form method="POST" id='buscaForm' >
+
+                        {% csrf_token %}    
+                        <div class="form-group" >
+                            <input name='indice'id="searchHome" type="text" class="form-control" placeholder="Ex.: bova11">
+                        </div>   
+                    
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-sm" style="font-weight: 500; background-color:rgb(150, 99, 50); color:white;">Buscar</button>
+                        </div>                    
+                    </form>
+                </p>
+                
+                <div id='msg' class="alert alert-danger" role="alert" style="display: none">
+                    
+                </div>
+                
+                <div id='load' style="display: none">
+                    <p class="card-text">
+                        Aguarde! estamos realizando a previsão!
+                    </p>
+                    <p class="card-text">
+                        <img src="https://icons8.com/preloaders/preloaders/1495/Spinner-3.gif" style="width:150px;height:100px;" />
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row" id="prevTab" style="display: none;">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="real-tab" data-bs-toggle="tab" data-bs-target="#real" type="button" role="tab" aria-controls="ral" aria-selected="true">Comparação de preço</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="dias30-tab" data-bs-toggle="tab" data-bs-target="#dias30" type="button" role="tab" aria-controls="dias30" aria-selected="false">Previsão para 30 dias</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="dias60-tab" data-bs-toggle="tab" data-bs-target="#dias60" type="button" role="tab" aria-controls="dias60" aria-selected="false">Previsão para 60 dias</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="dias90-tab" data-bs-toggle="tab" data-bs-target="#dias90" type="button" role="tab" aria-controls="dias90" aria-selected="false">Previsão para 90 dias</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="shadow-lg p-3 bg-body rounded" id='acao' style="color:rgb(114, 38, 23); font-weight: 800;">
+                
+            </div>
+
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="real" role="tabpanel" >
+                    <div class="card-body">
+                        <div class="shadow-lg p-3 mb-2 bg-body rounded">
+                            <div class="row">
+                              <div class="col-12 align-self-center" style="width:1050px">
+                                <div id="lstm_real" style="width:100%; max-height:400px"></div>                               
+                              </div>
+                            </div>
+                        </div>                      
+                    </div>  
+                    <div class="card-footer">
+                        <div class="container mt-2">
+                            <h5>Comparação entre preço de fechamento e preço previsto</h5>
+                            
+                            <div id='tablereal'></div>
+                                                     
+                        </div>   
+                    </div>
+
+                </div>
+                <div class="tab-pane fade" id="dias30" role="tabpanel">
+                    <div class="card-body">
+                        <div class="shadow-lg p-3 mb-2 bg-body rounded">
+                            <div class="row">
+                              
+                              <div class="col-12 align-self-center" style="width:1050px">
+                                <div id="lstm_previsao_30" style="min-width:1000px; max-height:400px"></div>
+                               
+                              </div>
+                              
+                            </div>
+                        </div>                      
+                    </div>
+                    <div class="card-footer">  
+                        <div class="container mt-2">
+                            <h5>Previsão para os próximos 30 dias</h5>
+                            
+                            <div id=futuro30></div>
+                                                      
+                        </div>
+                    </div>       
+                </div>
+                <div class="tab-pane fade" id="dias60" role="tabpanel" aria-labelledby="contact-tab">
+                    <div class="card-body">
+                        <div class="shadow-lg p-3 mb-2 bg-body rounded">
+                            <div class="row">
+                              <div class="col-12 align-self-center" style="width:1050px">
+                                <div id="lstm_previsao_60" style="min-width:1000px; max-height:400px"></div>
+                                
+                              </div>
+                            </div>
+                        </div>                      
+                    </div>  
+                    <div class="card-footer"> 
+                        <div class="container mt-2">
+                            <h5>Previsão para os próximos 60 dias</h5>
+
+                            <div id=futuro60></div>       
+
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="dias90" role="tabpanel" aria-labelledby="contact-tab">
+                    <div class="card-body">
+                        <div class="shadow-lg p-3 mb-2 bg-body rounded">
+                            <div class="row">
+                              <div class="col-12 align-self-center" style="width:1050px">
+                                <div id="lstm_previsao_90" style="width:100%; max-height:400px"></div>
+                               
+                              </div>
+                            </div>
+                        </div>                      
+                    </div>  
+                    <div class="card-footer"> 
+                        <div class="container mt-2">
+                            <h5>Previsão para os próximos 90 dias</h5>        
+                            
+                            <div id=futuro90></div> 
+
+                        </div>
+                    </div>
+                </div>                
+            </div>
+        </div>            
+    </div>
+{% endblock %} 
