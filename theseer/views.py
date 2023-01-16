@@ -45,7 +45,8 @@ def get_acao(codigo=[]):#padrão de 10 anos para o período
   for acao in codigo:
     #df[acao] = yf.Ticker(acao).history(period = (str(periodo)+'y'))['Close']
     #df[acao] = yf.download(acao, start="2017-01-19")['Close']
-    df[acao] = yf.download(acao, start="2017-01-19", end='2022-01-19')['Close']
+    #df[acao] = yf.download(acao, start="2017-01-19", end='2022-01-19')['Close']
+    df[acao] = yf.download(acao, start="2017-01-19")['Close']
   return df
 
 #previsao com rede neural recorrente lstm-keras

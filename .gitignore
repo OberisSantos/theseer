@@ -1,30 +1,16 @@
-env
-*.sqlite3
-*pyc
-.DS_Store
 
-src/*.egg-info
-lib
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.cache
-nosetests.xml
-coverage.xml
-
-# IDEs
-.idea/
-
-.tmp
-
-# Byte-compiled / optimized / DLL files
+### Django ###
+*.log
+*.pot
+*.pyc
 __pycache__/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media
+
+### Django.Python Stack ###
+# Byte-compiled / optimized / DLL files
 *.py[cod]
 *$py.class
 
@@ -45,15 +31,10 @@ parts/
 sdist/
 var/
 wheels/
-<<<<<<< HEAD
-*.Egg-info/
-.installed.cfg
-*.Egg
-=======
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
->>>>>>> 91526e6563367c49e2fc3f51999336375182707c
 MANIFEST
 
 # PyInstaller
@@ -69,23 +50,22 @@ pip-delete-this-directory.txt
 # Unit test / coverage reports
 htmlcov/
 .tox/
+.nox/
 .coverage
 .coverage.*
 .cache
 nosetests.xml
 coverage.xml
 *.cover
+*.py,cover
 .hypothesis/
 .pytest_cache/
+cover/
 
 # Translations
 *.mo
-*.pot
 
 # Django stuff:
-*.log
-local_settings.py
-db.sqlite3
 
 # Flask stuff:
 instance/
@@ -98,16 +78,25 @@ instance/
 docs/_build/
 
 # PyBuilder
+.pybuilder/
 target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
 
-# pyenv
-.python-version
+# IPython
+profile_default/
+ipython_config.py
 
-# celery beat schedule file
+
+.pdm.toml
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
+__pypackages__/
+
+# Celery stuff
 celerybeat-schedule
+celerybeat.pid
 
 # SageMath parsed files
 *.sage.py
@@ -132,25 +121,16 @@ venv.bak/
 /site
 
 # mypy
-<<<<<<< HEAD
 .mypy_cache/
-=======
-.mypy_cache/
+.dmypy.json
+dmypy.json
 
-# Exclude collected Django static files
-static_collected
+# Pyre type checker
+.pyre/
 
-# Exclude machine-specific vs code settings
-.vscode/settings.json
->>>>>>> 91526e6563367c49e2fc3f51999336375182707c
+# pytype static type analyzer
+.pytype/
 
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Cython debug symbols
+cython_debug/
 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
